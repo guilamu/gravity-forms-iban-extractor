@@ -1,0 +1,27 @@
+{
+    "name": "gravity-forms-iban-extractor/gravity-forms-iban-extractor",
+    "description": "Gravity Forms IBAN Extractor - Validates and extracts IBAN information",
+    "type": "wordpress-plugin",
+    "license": "AGPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Guilamu",
+            "email": "guilamu@github.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "globalcitizen/php-iban": "^4.2.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "classmap": [
+            "includes/"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}
