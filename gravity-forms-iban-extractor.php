@@ -97,6 +97,7 @@ function gf_iban_init()
     // Include required files.
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-iban-extractor.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-gf-field-iban-extractor.php';
+    require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-poe-api-service.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/admin-settings.php';
 
     // Register field type.
@@ -148,6 +149,20 @@ function gf_iban_enqueue_scripts()
                 'accountNo' => __('Account No.', 'gravity-forms-iban-extractor'),
                 'enterIban' => __('Enter an IBAN to validate', 'gravity-forms-iban-extractor'),
                 'suggestion' => __('Did you mean:', 'gravity-forms-iban-extractor'),
+                // Document extraction strings.
+                'scanDocument' => __('Scan Document for IBAN', 'gravity-forms-iban-extractor'),
+                'scanning' => __('Scanning document...', 'gravity-forms-iban-extractor'),
+                'extractionComplete' => __('IBAN extracted successfully', 'gravity-forms-iban-extractor'),
+                'extractionFailed' => __('Could not extract IBAN from document', 'gravity-forms-iban-extractor'),
+                'invalidFile' => __('Please upload a PDF, PNG, JPG, or WEBP file', 'gravity-forms-iban-extractor'),
+                'fileTooLarge' => __('File size must be less than 10MB', 'gravity-forms-iban-extractor'),
+                'dropDocument' => __('Drop document here', 'gravity-forms-iban-extractor'),
+                'orClickBrowse' => __('or click to browse', 'gravity-forms-iban-extractor'),
+                'extractedInfo' => __('Extracted Information', 'gravity-forms-iban-extractor'),
+                'accountHolder' => __('Account Holder', 'gravity-forms-iban-extractor'),
+                'bankName' => __('Bank Name', 'gravity-forms-iban-extractor'),
+                'bicSwift' => __('BIC/SWIFT', 'gravity-forms-iban-extractor'),
+                'removeDocument' => __('Remove', 'gravity-forms-iban-extractor'),
             ),
         )
     );
@@ -191,12 +206,242 @@ add_action('wp_ajax_gf_validate_iban', __NAMESPACE__ . '\\gf_iban_ajax_validate'
 add_action('wp_ajax_nopriv_gf_validate_iban', __NAMESPACE__ . '\\gf_iban_ajax_validate');
 
 /**
+ * AJAX handler for document upload and IBAN extraction.
+ */
+function gf_iban_ajax_extract_from_document()
+{
+    check_ajax_referer('gf_iban_validate', 'nonce');
+
+    // Get field settings.
+    $field_id = isset($_POST['field_id']) ? absint($_POST['field_id']) : 0;
+    $form_id = isset($_POST['form_id']) ? absint($_POST['form_id']) : 0;
+
+    if (empty($field_id) || empty($form_id)) {
+        wp_send_json_error(array('message' => __('Invalid field or form ID.', 'gravity-forms-iban-extractor')));
+    }
+
+    // Get form and field.
+    $form = \GFAPI::get_form($form_id);
+    if (!$form) {
+        wp_send_json_error(array('message' => __('Form not found.', 'gravity-forms-iban-extractor')));
+    }
+
+    $field = \GFAPI::get_field($form, $field_id);
+    if (!$field) {
+        wp_send_json_error(array('message' => __('Field not found.', 'gravity-forms-iban-extractor')));
+    }
+
+    // Get API settings from field.
+    $api_key = $field->poe_api_key ?? '';
+    $model = $field->poe_model ?? '';
+
+    if (empty($api_key)) {
+        wp_send_json_error(array('message' => __('POE API key not configured.', 'gravity-forms-iban-extractor')));
+    }
+
+    if (empty($model)) {
+        wp_send_json_error(array('message' => __('AI model not configured.', 'gravity-forms-iban-extractor')));
+    }
+
+    // Check for uploaded file.
+    if (!isset($_FILES['document']) || empty($_FILES['document']['tmp_name'])) {
+        wp_send_json_error(array('message' => __('No file uploaded.', 'gravity-forms-iban-extractor')));
+    }
+
+    $file = $_FILES['document'];
+
+    // Validate file type.
+    $allowed_types = array('image/jpeg', 'image/png', 'image/webp', 'application/pdf');
+    $file_type = wp_check_filetype($file['name']);
+    $mime_type = $file_type['type'];
+
+    // Also check actual mime type.
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $actual_mime = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    if (!in_array($actual_mime, $allowed_types, true)) {
+        wp_send_json_error(array('message' => __('Invalid file type. Please upload PDF, PNG, JPG, or WEBP.', 'gravity-forms-iban-extractor')));
+    }
+
+    // Validate file size (10MB max).
+    $max_size = 10 * 1024 * 1024;
+    if ($file['size'] > $max_size) {
+        wp_send_json_error(array('message' => __('File too large. Maximum size is 10MB.', 'gravity-forms-iban-extractor')));
+    }
+
+    // Read file and convert to base64.
+    $file_content = file_get_contents($file['tmp_name']);
+
+    // Handle PDF conversion.
+    if ('application/pdf' === $actual_mime) {
+        $image_data = gf_iban_convert_pdf_to_image($file['tmp_name']);
+        if (is_wp_error($image_data)) {
+            wp_send_json_error(array('message' => $image_data->get_error_message()));
+        }
+        $base64 = $image_data;
+    } else {
+        $base64 = base64_encode($file_content);
+    }
+
+    // Call POE API.
+    $result = POE_API_Service::extract_iban_from_document($api_key, $model, $base64);
+
+    if (is_wp_error($result)) {
+        wp_send_json_error(array('message' => $result->get_error_message()));
+    }
+
+    if (!$result['success']) {
+        wp_send_json_error(array('message' => $result['error'] ?? __('Extraction failed.', 'gravity-forms-iban-extractor')));
+    }
+
+    // Upload and save the document.
+    $upload_result = gf_iban_save_uploaded_document($file);
+    $document_url = is_wp_error($upload_result) ? '' : $upload_result;
+
+    // Store extraction data in transient for later saving on form submission.
+    // Use a unique token that will be submitted with the form.
+    $extraction_token = wp_generate_uuid4();
+    $transient_key = 'gf_iban_extraction_' . $extraction_token;
+    $extraction_data = array_merge($result['data'], array('document_url' => $document_url));
+    set_transient($transient_key, $extraction_data, HOUR_IN_SECONDS);
+
+    wp_send_json_success(array(
+        'extracted_data' => $result['data'],
+        'document_url' => $document_url,
+        'extraction_token' => $extraction_token,
+    ));
+}
+add_action('wp_ajax_gf_iban_extract_from_document', __NAMESPACE__ . '\\gf_iban_ajax_extract_from_document');
+add_action('wp_ajax_nopriv_gf_iban_extract_from_document', __NAMESPACE__ . '\\gf_iban_ajax_extract_from_document');
+
+/**
+ * AJAX handler for fetching available POE models.
+ */
+function gf_iban_ajax_get_models()
+{
+    error_log('GF IBAN Extractor: AJAX get_models called');
+
+    // Verify nonce - but log instead of dying silently.
+    if (!wp_verify_nonce($_POST['nonce'] ?? '', 'gf_iban_admin')) {
+        error_log('GF IBAN Extractor: Nonce verification failed for get_models');
+        wp_send_json_error(array('message' => __('Security check failed.', 'gravity-forms-iban-extractor')));
+    }
+
+    if (!current_user_can('edit_posts')) {
+        error_log('GF IBAN Extractor: Permission denied for get_models');
+        wp_send_json_error(array('message' => __('Permission denied.', 'gravity-forms-iban-extractor')));
+    }
+
+    $api_key = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash($_POST['api_key'])) : '';
+
+    if (empty($api_key)) {
+        error_log('GF IBAN Extractor: Empty API key');
+        wp_send_json_error(array('message' => __('API key is required.', 'gravity-forms-iban-extractor')));
+    }
+
+    error_log('GF IBAN Extractor: Calling POE API with key: ' . substr($api_key, 0, 10) . '...');
+
+    $models = POE_API_Service::get_models($api_key);
+
+    if (is_wp_error($models)) {
+        error_log('GF IBAN Extractor: POE API error - ' . $models->get_error_message());
+        wp_send_json_error(array('message' => $models->get_error_message()));
+    }
+
+    error_log('GF IBAN Extractor: Successfully retrieved ' . count($models) . ' models');
+    wp_send_json_success(array('models' => $models));
+}
+add_action('wp_ajax_gf_iban_get_models', __NAMESPACE__ . '\\gf_iban_ajax_get_models');
+
+/**
+ * Convert PDF first page to image.
+ *
+ * @param string $pdf_path Path to PDF file.
+ * @return string|\WP_Error Base64 encoded image or error.
+ */
+function gf_iban_convert_pdf_to_image($pdf_path)
+{
+    // Check if Imagick is available.
+    if (!class_exists('Imagick')) {
+        return new \WP_Error('no_imagick', __('PDF processing requires Imagick PHP extension.', 'gravity-forms-iban-extractor'));
+    }
+
+    try {
+        $imagick = new \Imagick();
+        $imagick->setResolution(150, 150);
+        $imagick->readImage($pdf_path . '[0]'); // First page only.
+        $imagick->setImageFormat('jpeg');
+        $imagick->setImageCompressionQuality(85);
+
+        $image_data = $imagick->getImageBlob();
+        $imagick->destroy();
+
+        return base64_encode($image_data);
+    } catch (\Exception $e) {
+        return new \WP_Error('pdf_error', __('Failed to process PDF: ', 'gravity-forms-iban-extractor') . $e->getMessage());
+    }
+}
+
+/**
+ * Save uploaded document to WordPress uploads.
+ *
+ * @param array $file The uploaded file array.
+ * @return string|\WP_Error URL of saved file or error.
+ */
+function gf_iban_save_uploaded_document($file)
+{
+    require_once ABSPATH . 'wp-admin/includes/file.php';
+    require_once ABSPATH . 'wp-admin/includes/media.php';
+    require_once ABSPATH . 'wp-admin/includes/image.php';
+
+    $upload = wp_handle_upload($file, array('test_form' => false));
+
+    if (isset($upload['error'])) {
+        return new \WP_Error('upload_error', $upload['error']);
+    }
+
+    return $upload['url'];
+}
+
+/**
  * Plugin activation hook.
  */
 function gf_iban_activate()
 {
-    // Activation tasks if needed.
+    // Create extraction data table.
+    gf_iban_create_extraction_table();
+
     flush_rewrite_rules();
+}
+
+/**
+ * Create the extraction data table.
+ */
+function gf_iban_create_extraction_table()
+{
+    global $wpdb;
+
+    $table_name = $wpdb->prefix . 'gf_iban_entry_extraction';
+    $charset_collate = $wpdb->get_charset_collate();
+
+    $sql = "CREATE TABLE $table_name (
+        id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+        entry_id bigint(20) UNSIGNED NOT NULL,
+        field_id int(10) UNSIGNED NOT NULL,
+        extracted_iban varchar(50) DEFAULT NULL,
+        extracted_bic varchar(20) DEFAULT NULL,
+        extracted_bank_name varchar(255) DEFAULT NULL,
+        extracted_first_name varchar(100) DEFAULT NULL,
+        extracted_last_name varchar(100) DEFAULT NULL,
+        document_url text DEFAULT NULL,
+        extraction_date datetime DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        KEY entry_field (entry_id, field_id)
+    ) $charset_collate;";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
 }
 register_activation_hook(__FILE__, __NAMESPACE__ . '\\gf_iban_activate');
 

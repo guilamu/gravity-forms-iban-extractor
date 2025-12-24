@@ -1,12 +1,13 @@
 # Gravity Forms IBAN Extractor
 
-A WordPress plugin that adds an IBAN (International Bank Account Number) extractor field type to Gravity Forms. Validates IBANs locally using the [php-iban](https://github.com/globalcitizen/php-iban) library and extracts detailed bank information in real-time.
+A WordPress plugin that adds an IBAN (International Bank Account Number) extractor field type to Gravity Forms. Validates IBANs locally using the [php-iban](https://github.com/globalcitizen/php-iban) library and extracts detailed bank information in real-time. Optionally extract IBANs from scanned documents using AI.
 
 ## Features
 
 - **Real-time IBAN Validation**: Validates IBANs as users type with debounced input (300ms)
 - **Data Extraction**: Extracts and displays account number, BBAN, country, currency, bank code, and more
-- **Zero External APIs**: All validation happens locally using the php-iban library
+- **Document Scanning**: Extract IBAN from PDF, PNG, JPG, or WEBP documents using AI (POE API)
+- **Zero External APIs for Validation**: All IBAN validation happens locally using the php-iban library
 - **Configurable Display**: Toggle which extracted fields to show in the form editor
 - **Error Suggestions**: Provides mistranscription suggestions for invalid IBANs
 - **Auto-formatting**: Formats IBAN with spaces on blur for human readability
@@ -20,6 +21,7 @@ A WordPress plugin that adds an IBAN (International Bank Account Number) extract
 - PHP 7.4 or higher
 - Gravity Forms 2.5 or higher
 - Composer (for installation)
+- POE API key (optional, for document extraction)
 
 ## Installation
 
@@ -53,13 +55,31 @@ A WordPress plugin that adds an IBAN (International Bank Account Number) extract
 | Show BIC/Bank Code | Display the bank identifier code |
 | Show Bank Info | Display additional bank information |
 | Enable Real-time Preview | Validate and show data as user types |
+| Enable Document Extraction | Allow users to upload documents to extract IBAN |
+| POE API Key | Your POE API key for document extraction |
+| AI Model | Select the AI model for document analysis |
+
+### Document Extraction
+
+When enabled, users can upload documents (bank statements, RIBs, etc.) to automatically extract IBAN information:
+
+1. Click "Browse" or drag a file onto the upload area
+2. Supported formats: PDF, PNG, JPG, WEBP (max 10MB)
+3. The AI analyzes the document and extracts:
+   - IBAN
+   - BIC/SWIFT code
+   - Bank name
+   - Account holder name
+4. The IBAN field is auto-populated with the extracted value
+5. Additional extracted data is displayed in a table below
+
+**Note**: Document extraction requires a valid [POE API](https://poe.com/) key and an AI model with image input capability.
 
 ### Example Output
 
 When a user enters `DE89370400440532013000`:
 
 ```
-✓ Valid IBAN
 Country: Germany
 Currency: EUR
 Bank Code: 37040044
@@ -92,6 +112,8 @@ Extracted data is automatically stored in entry meta with these keys:
 - `iban_{field_id}_bban`
 - `iban_{field_id}_formatted`
 - `iban_{field_id}_is_sepa`
+
+Document extraction data is stored in a separate database table (`{prefix}gf_iban_entry_extraction`) and displayed in the entry detail view.
 
 ## Supported Countries
 
@@ -137,6 +159,7 @@ gravity-forms-iban-extractor/
 ├── includes/
 │   ├── class-gf-field-iban-extractor.php
 │   ├── class-iban-extractor.php
+│   ├── class-poe-api-service.php
 │   └── admin-settings.php
 ├── assets/
 │   ├── js/
@@ -171,6 +194,7 @@ The plugin uses standard Gravity Forms filters:
 - All inputs are sanitized with `sanitize_text_field()`
 - AJAX endpoints use nonce verification
 - Output is escaped with appropriate WordPress functions
+- POE API key is stored securely in field settings
 
 ## License
 
@@ -180,8 +204,16 @@ AGPL-3.0-or-later
 
 - [php-iban](https://github.com/globalcitizen/php-iban) by Global Citizen
 - [Gravity Forms](https://www.gravityforms.com/)
+- [POE API](https://poe.com/) for document extraction
 
 ## Changelog
+
+### 1.1.0
+- Added document extraction feature using POE AI API
+- Extract IBAN from PDF, PNG, JPG, WEBP documents
+- Side-by-side layout for IBAN input and document upload
+- Entry detail view shows extracted bank information
+- New field settings for POE API configuration
 
 ### 1.0.0
 - Initial release
@@ -189,3 +221,4 @@ AGPL-3.0-or-later
 - Real-time preview
 - French/English translations
 - PHPUnit tests
+
