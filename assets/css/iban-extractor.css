@@ -105,7 +105,7 @@
     border: 1px solid #e5e5e5;
     border-radius: 4px;
     padding: 12px;
-    max-width: 400px;
+    /* Full width for results table */
 }
 
 /* Data Table */
@@ -113,6 +113,8 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
+    margin-bottom: 0 !important;
+    /* Override theme margin */
 }
 
 .gf-iban-row th,
@@ -306,6 +308,7 @@
 
 /* Print Styles */
 @media print {
+
     .gf-iban-status.loading,
     .gf-iban-spinner {
         display: none;
@@ -331,4 +334,255 @@
 .gform_wrapper .ginput_container_iban .gf-iban-input.small {
     width: 100%;
     max-width: 250px;
+}
+
+/* Document Extraction Styles */
+.gf-iban-document-extraction {
+}
+
+/* Scan Button */
+/* Scan Button Styles (Removed - reverting to standard file input) */
+
+/* Upload Zone */
+
+/* Upload Zone */
+.gf-iban-upload-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.gf-iban-upload-zone:hover,
+.gf-iban-upload-zone.dragover {
+    border-color: #0073aa;
+    background-color: rgba(0, 115, 170, 0.05);
+}
+
+.gf-iban-upload-icon {
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.gf-iban-upload-text {
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+.gf-iban-upload-hint {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+}
+
+/* Scan Label - match Gravity Forms field label styling */
+.gf-iban-scan-label {
+    display: block;
+    font-size: inherit;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+/* Extraction Preview */
+.gf-iban-extraction-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 0;
+    min-height: 48px;
+    /* Match standard input height */
+    box-sizing: border-box;
+}
+
+.gf-iban-preview-image {
+    display: none !important;
+}
+
+.gf-iban-preview-image img {
+    display: none;
+}
+
+.gf-iban-preview-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.gf-iban-filename {
+    font-size: 13px;
+    color: #333;
+    word-break: break-word;
+}
+
+.gf-iban-remove-doc {
+    padding: 6px 12px;
+    background-color: #dc3232;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.gf-iban-remove-doc:hover {
+    background-color: #c32b2b;
+}
+
+/* Extraction Status */
+.gf-iban-extraction-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: #f0f0f0;
+}
+
+.gf-iban-extraction-status.success {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.gf-iban-extraction-status.error {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+/* Extraction Spinner */
+.gf-iban-extraction-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ddd;
+    border-top-color: #0073aa;
+    border-radius: 50%;
+    animation: gf-iban-spin 0.8s linear infinite;
+}
+
+/* Extraction Results */
+.gf-iban-extraction-results {
+    margin-top: 15px;
+}
+
+.gf-iban-extracted-data {
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.gf-iban-extracted-data strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Entry Extraction Table (for admin entry detail) */
+.gf-iban-entry-extraction {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+}
+
+.gf-iban-entry-extraction h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+}
+
+.gf-iban-entry-extraction .gf-iban-table {
+    width: 100%;
+}
+
+/* Highlight Animation */
+.gf-iban-highlight {
+    animation: gf-iban-highlight-pulse 1.5s ease-out;
+}
+
+@keyframes gf-iban-highlight-pulse {
+    0% {
+        background-color: #fff3cd;
+        box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+    }
+
+    100% {
+        background-color: transparent;
+        box-shadow: none;
+    }
+}
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+    .gf-iban-extraction-preview {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .gf-iban-preview-info {
+        flex-direction: column;
+    }
+}
+
+/* Full-Width Results Container */
+.gf-iban-results {
+    width: 100%;
+    margin-top: 15px;
+    clear: both;
+}
+
+/* Layout Wrapper */
+.gf-iban-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    position: relative;
+    /* Ensure z-index works if needed */
+}
+
+.gf-iban-wrapper .ginput_container_iban {
+    flex: 1;
+    min-width: 0;
+}
+
+.gf-iban-document-extraction {
+    flex: 1;
+    min-width: 0;
+}
+
+@media screen and (max-width: 768px) {
+    .gf-iban-wrapper {
+        flex-direction: column;
+    }
+
+    .gf-iban-wrapper .ginput_container_iban {
+        width: 100%;
+        flex: none;
+    }
+
+    .gf-iban-document-extraction {
+        width: 100%;
+        /* margin-top removed as requested */
+        flex: none;
+    }
 }
