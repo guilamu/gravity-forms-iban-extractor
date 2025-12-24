@@ -76,6 +76,7 @@ class GF_Field_IBAN_Extractor extends \GF_Field
             // Custom settings.
             'iban_display_options_setting',
             'iban_preview_setting',
+            'iban_document_extraction_setting',
         );
     }
 
@@ -94,6 +95,9 @@ class GF_Field_IBAN_Extractor extends \GF_Field
             'show_bank' => true,
             'show_bank_info' => false,
             'enable_preview' => true,
+            'enable_document_extraction' => false,
+            'poe_api_key' => '',
+            'poe_model' => '',
         );
     }
 
@@ -130,6 +134,7 @@ class GF_Field_IBAN_Extractor extends \GF_Field
         $show_bank = $this->show_bank ?? true;
         $show_bank_info = $this->show_bank_info ?? false;
         $enable_preview = $this->enable_preview ?? true;
+        $enable_document_extraction = $this->enable_document_extraction ?? false;
 
         // Build data attributes for JS.
         $data_attrs = sprintf(
@@ -145,12 +150,17 @@ class GF_Field_IBAN_Extractor extends \GF_Field
 
         $value = esc_attr($value);
 
+        // Build the validation results HTML.
+        $results_html = sprintf(
+            '<div class="gf-iban-results" aria-live="polite" role="region" aria-label="%s"></div>',
+            esc_attr__('IBAN validation results', 'gravity-forms-iban-extractor')
+        );
+
         // Build the input HTML.
         $input = sprintf(
             '<div class="ginput_container ginput_container_iban">
                 <input name="input_%d" id="%s" type="text" value="%s" class="%s gf-iban-input" %s %s %s %s %s autocomplete="off" />
                 <div class="gf-iban-status" aria-live="polite"></div>
-                <div class="gf-iban-results" aria-live="polite" role="region" aria-label="%s"></div>
             </div>',
             $id,
             esc_attr($field_id),
@@ -160,11 +170,16 @@ class GF_Field_IBAN_Extractor extends \GF_Field
             $placeholder,
             $required,
             $invalid,
-            $data_attrs,
-            esc_attr__('IBAN validation results', 'gravity-forms-iban-extractor')
+            $data_attrs
         );
 
-        return $input;
+        // Add document extraction UI if enabled.
+        $extraction_html = '';
+        if ($enable_document_extraction && !$is_form_editor) {
+            $extraction_html = $this->get_document_extraction_html($form_id, $id);
+        }
+
+        return '<div class="gf-iban-wrapper">' . $input . $extraction_html . '</div>' . $results_html;
     }
 
     /**
@@ -351,5 +366,54 @@ class GF_Field_IBAN_Extractor extends \GF_Field
         $this->show_bank = (bool) $this->show_bank;
         $this->show_bank_info = (bool) $this->show_bank_info;
         $this->enable_preview = (bool) $this->enable_preview;
+        $this->enable_document_extraction = (bool) $this->enable_document_extraction;
+        $this->poe_api_key = sanitize_text_field($this->poe_api_key ?? '');
+        $this->poe_model = sanitize_text_field($this->poe_model ?? '');
+    }
+
+    /**
+     * Get the document extraction HTML.
+     *
+     * @param int $form_id The form ID.
+     * @param int $field_id The field ID.
+     * @return string
+     */
+    private function get_document_extraction_html($form_id, $field_id)
+    {
+        $html = '<div class="gf-iban-document-extraction" data-form-id="' . esc_attr($form_id) . '" data-field-id="' . esc_attr($field_id) . '">';
+
+        // Label.
+        $html .= '<label class="gfield_label gf-iban-scan-label" style="display:block; margin-bottom:8px; font-weight:bold;">' . esc_html__('Scan document for IBAN', 'gravity-forms-iban-extractor') . '</label>';
+
+        // File input (visible).
+        $html .= '<input type="file" class="gf-iban-document-input" accept="image/jpeg,image/png,image/webp,application/pdf" />';
+
+        // Help text.
+        $html .= '<div class="gf-iban-upload-hint">' . esc_html__('Accepted file types: pdf, png, jpeg, webp.', 'gravity-forms-iban-extractor') . '</div>';
+
+        // Upload zone (hidden, legacy/fallback if needed, or remove). Keeping hidden for now or removing if unused.
+        // Removing unused upload zone and button code.
+
+        // Preview area.
+        $html .= '<div class="gf-iban-extraction-preview" style="display:none;">';
+        $html .= '<div class="gf-iban-preview-image"><img src="" alt="Preview" /></div>';
+        $html .= '<div class="gf-iban-preview-info">';
+        $html .= '<span class="gf-iban-filename"></span>';
+        $html .= '<button type="button" class="gf-iban-remove-doc">' . esc_html__('Remove', 'gravity-forms-iban-extractor') . '</button>';
+        $html .= '</div>';
+        $html .= '</div>';
+
+        // Status area.
+        $html .= '<div class="gf-iban-extraction-status" style="display:none;">';
+        $html .= '<span class="gf-iban-extraction-spinner"></span>';
+        $html .= '<span class="gf-iban-extraction-text"></span>';
+        $html .= '</div>';
+
+        // Extraction results.
+        $html .= '<div class="gf-iban-extraction-results" style="display:none;"></div>';
+
+        $html .= '</div>';
+
+        return $html;
     }
 }
