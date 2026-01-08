@@ -3,13 +3,14 @@
  * Plugin Name: Gravity Forms IBAN Extractor
  * Plugin URI: https://github.com/guilamu/gravity-forms-iban-extractor
  * Description: Adds an IBAN extractor field type to Gravity Forms with real-time validation and data extraction.
- * Version: 1.0.0
+ * Version: 1.2.0
  * Author: Guilamu
  * Author URI: https://github.com/guilamu
  * License: AGPL-3.0-or-later
  * License URI: https://www.gnu.org/licenses/agpl-3.0.html
  * Text Domain: gravity-forms-iban-extractor
  * Domain Path: /languages
+ * Update URI: https://github.com/guilamu/gravity-forms-iban-extractor/
  * Requires at least: 5.8
  * Requires PHP: 7.4
  *
@@ -24,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants.
-define('GF_IBAN_EXTRACTOR_VERSION', '1.0.0');
+define('GF_IBAN_EXTRACTOR_VERSION', '1.2.0');
 define('GF_IBAN_EXTRACTOR_PLUGIN_FILE', __FILE__);
 define('GF_IBAN_EXTRACTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GF_IBAN_EXTRACTOR_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -98,6 +99,7 @@ function gf_iban_init()
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-iban-extractor.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-gf-field-iban-extractor.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-poe-api-service.php';
+    require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-github-updater.php'; // Add GitHub Updater
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/admin-settings.php';
 
     // Register field type.
