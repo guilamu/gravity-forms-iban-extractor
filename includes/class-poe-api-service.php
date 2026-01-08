@@ -55,7 +55,6 @@ class POE_API_Service
                 'Authorization' => 'Bearer ' . $api_key,
             ),
             'timeout' => 30,
-            'sslverify' => false,
         ));
 
         if (is_wp_error($response)) {
@@ -170,7 +169,6 @@ class POE_API_Service
             ),
             'body' => wp_json_encode($payload),
             'timeout' => 90,
-            'sslverify' => false,
         ));
 
         if (is_wp_error($response)) {
