@@ -58,6 +58,10 @@ Currently the prompt is optimized for standard bank documents. Customization may
 
 ## Changelog
 
+### 1.3.0
+- **New:** Integrated Guilamu Bug Reporter support
+- **New:** Added "Report a Bug" link in plugins list
+
 ### 1.2.0
 - **Security:** Enforced SSL verification for POE API requests
 - **Improved:** Updated to use GitHub auto-updates

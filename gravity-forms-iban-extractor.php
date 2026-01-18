@@ -3,7 +3,7 @@
  * Plugin Name: Gravity Forms IBAN Extractor
  * Plugin URI: https://github.com/guilamu/gravity-forms-iban-extractor
  * Description: Adds an IBAN extractor field type to Gravity Forms with real-time validation and data extraction.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: Guilamu
  * Author URI: https://github.com/guilamu
  * License: AGPL-3.0-or-later
@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants.
-define('GF_IBAN_EXTRACTOR_VERSION', '1.2.0');
+define('GF_IBAN_EXTRACTOR_VERSION', '1.3.0');
 define('GF_IBAN_EXTRACTOR_PLUGIN_FILE', __FILE__);
 define('GF_IBAN_EXTRACTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GF_IBAN_EXTRACTOR_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -456,3 +456,43 @@ function gf_iban_deactivate()
     flush_rewrite_rules();
 }
 register_deactivation_hook(__FILE__, __NAMESPACE__ . '\\gf_iban_deactivate');
+
+/**
+ * Register with Guilamu Bug Reporter
+ */
+add_action('plugins_loaded', function() {
+    if (class_exists('Guilamu_Bug_Reporter')) {
+        \Guilamu_Bug_Reporter::register(array(
+            'slug'        => 'gravity-forms-iban-extractor',
+            'name'        => 'Gravity Forms IBAN Extractor',
+            'version'     => GF_IBAN_EXTRACTOR_VERSION,
+            'github_repo' => 'guilamu/gravity-forms-iban-extractor',
+        ));
+    }
+}, 20);
+
+/**
+ * Add 'Report a Bug' link to plugin row meta.
+ *
+ * @param array  $links Plugin row meta links.
+ * @param string $file  Plugin file path.
+ * @return array Modified links.
+ */
+function gf_iban_plugin_row_meta($links, $file) {
+    if (plugin_basename(GF_IBAN_EXTRACTOR_PLUGIN_FILE) !== $file) {
+        return $links;
+    }
+
+    if (class_exists('Guilamu_Bug_Reporter')) {
+        $links[] = sprintf(
+            '<a href="#" class="guilamu-bug-report-btn" data-plugin-slug="gravity-forms-iban-extractor" data-plugin-name="%s">%s</a>',
+            esc_attr__('Gravity Forms IBAN Extractor', 'gravity-forms-iban-extractor'),
+            esc_html__('🐛 Report a Bug', 'gravity-forms-iban-extractor')
+        );
+    } else {
+        $links[] = '<a href="https://github.com/guilamu/guilamu-bug-reporter/releases" target="_blank">🐛 Report a Bug (install Bug Reporter)</a>';
+    }
+
+    return $links;
+}
+add_filter('plugin_row_meta', __NAMESPACE__ . '\\gf_iban_plugin_row_meta', 10, 2);
