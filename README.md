@@ -48,15 +48,25 @@ Currently the prompt is optimized for standard bank documents. Customization may
 │   └── js
 │       └── iban-extractor.js         # Validation & extraction logic
 ├── includes
-│   ├── class-gravity-extract.php     # Main class
-│   ├── class-poe-api-service.php     # API communication
+│   ├── class-gf-field-iban-extractor.php  # Field class
+│   ├── class-iban-extractor.php      # IBAN parsing wrapper
+│   ├── class-poe-api-service.php     # AI document extraction
 │   ├── class-github-updater.php      # Auto-updater
 │   └── admin-settings.php            # Form editor settings
+├── lib
+│   ├── php-iban.php                  # Bundled php-iban library
+│   ├── registry.txt                  # IBAN country registry
+│   ├── mistranscriptions.txt         # Common typo mappings
+│   └── LICENSE-php-iban              # LGPL-2.1 license
 └── languages
     └── gravity-forms-iban-extractor.pot # Translation template
 ```
 
 ## Changelog
+
+### 1.3.1
+- **Changed:** Removed Composer dependency - php-iban library now bundled in `lib/`
+- **Improved:** Simpler installation (no need to run `composer install`)
 
 ### 1.3.0
 - **New:** Integrated Guilamu Bug Reporter support
@@ -72,5 +82,18 @@ Currently the prompt is optimized for standard bank documents. Customization may
 - IBAN validation field
 - POE API integration for document scanning
 
+## Third-Party Libraries
+
+This plugin includes the following third-party library:
+
+### php-iban
+- **Source:** [github.com/globalcitizen/php-iban](https://github.com/globalcitizen/php-iban)
+- **License:** LGPL-2.1-or-later (see `lib/LICENSE-php-iban`)
+- **Purpose:** IBAN validation, parsing, and country data extraction
+
+The php-iban library provides comprehensive IBAN support including validation, checksum verification, and extraction of country, bank, branch, and account information.
+
 ## License
 This project is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0) - see the [LICENSE](LICENSE) file for details.
+
+The bundled php-iban library is licensed under LGPL-2.1-or-later, which is compatible with AGPL-3.0.

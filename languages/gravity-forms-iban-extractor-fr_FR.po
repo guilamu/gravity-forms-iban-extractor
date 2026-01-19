@@ -3,10 +3,10 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms IBAN Extractor 1.3.0\n"
+"Project-Id-Version: Gravity Forms IBAN Extractor 1.3.1\n"
 "Report-Msgid-Bugs-To: https://example.com/gravity-forms-iban-extractor\n"
 "POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
-"PO-Revision-Date: 2026-01-18 11:38+0100\n"
+"PO-Revision-Date: 2026-01-19 09:00+0100\n"
 "Last-Translator: Your Name <your@email.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "Language: fr_FR\n"
@@ -14,11 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.4.4\n"
-
-#: gravity-forms-iban-extractor.php
-msgid "Gravity Forms IBAN Extractor: Please run \"composer install\" in the plugin directory."
-msgstr "Gravity Forms IBAN Extractor : Veuillez exécuter « composer install » dans le répertoire du plugin."
+"X-Generator: Poedit 3.8\n"
 
 #: gravity-forms-iban-extractor.php
 msgid "Gravity Forms IBAN Extractor requires %s to be installed and activated."

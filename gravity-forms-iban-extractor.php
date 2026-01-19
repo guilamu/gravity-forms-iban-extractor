@@ -3,7 +3,7 @@
  * Plugin Name: Gravity Forms IBAN Extractor
  * Plugin URI: https://github.com/guilamu/gravity-forms-iban-extractor
  * Description: Adds an IBAN extractor field type to Gravity Forms with real-time validation and data extraction.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Guilamu
  * Author URI: https://github.com/guilamu
  * License: AGPL-3.0-or-later
@@ -25,27 +25,17 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants.
-define('GF_IBAN_EXTRACTOR_VERSION', '1.3.0');
+define('GF_IBAN_EXTRACTOR_VERSION', '1.3.1');
 define('GF_IBAN_EXTRACTOR_PLUGIN_FILE', __FILE__);
 define('GF_IBAN_EXTRACTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GF_IBAN_EXTRACTOR_PLUGIN_URL', plugin_dir_url(__FILE__));
 
 /**
- * Load Composer autoloader.
+ * Load bundled php-iban library.
+ * Library source: https://github.com/globalcitizen/php-iban
+ * License: LGPL-2.1-or-later (see lib/LICENSE-php-iban)
  */
-if (file_exists(GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'vendor/autoload.php')) {
-    require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'vendor/autoload.php';
-} else {
-    add_action('admin_notices', function () {
-        ?>
-        <div class="notice notice-error">
-            <p><?php esc_html_e('Gravity Forms IBAN Extractor: Please run "composer install" in the plugin directory.', 'gravity-forms-iban-extractor'); ?>
-            </p>
-        </div>
-        <?php
-    });
-    return;
-}
+require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'lib/php-iban.php';
 
 /**
  * Check for Gravity Forms dependency.
@@ -460,12 +450,12 @@ register_deactivation_hook(__FILE__, __NAMESPACE__ . '\\gf_iban_deactivate');
 /**
  * Register with Guilamu Bug Reporter
  */
-add_action('plugins_loaded', function() {
+add_action('plugins_loaded', function () {
     if (class_exists('Guilamu_Bug_Reporter')) {
         \Guilamu_Bug_Reporter::register(array(
-            'slug'        => 'gravity-forms-iban-extractor',
-            'name'        => 'Gravity Forms IBAN Extractor',
-            'version'     => GF_IBAN_EXTRACTOR_VERSION,
+            'slug' => 'gravity-forms-iban-extractor',
+            'name' => 'Gravity Forms IBAN Extractor',
+            'version' => GF_IBAN_EXTRACTOR_VERSION,
             'github_repo' => 'guilamu/gravity-forms-iban-extractor',
         ));
     }
@@ -478,7 +468,8 @@ add_action('plugins_loaded', function() {
  * @param string $file  Plugin file path.
  * @return array Modified links.
  */
-function gf_iban_plugin_row_meta($links, $file) {
+function gf_iban_plugin_row_meta($links, $file)
+{
     if (plugin_basename(GF_IBAN_EXTRACTOR_PLUGIN_FILE) !== $file) {
         return $links;
     }
