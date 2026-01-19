@@ -64,6 +64,9 @@ Currently the prompt is optimized for standard bank documents. Customization may
 
 ## Changelog
 
+### 1.3.2
+- **Improved:** Completed French translations for Document Extraction settings
+
 ### 1.3.1
 - **Changed:** Removed Composer dependency - php-iban library now bundled in `lib/`
 - **Improved:** Simpler installation (no need to run `composer install`)

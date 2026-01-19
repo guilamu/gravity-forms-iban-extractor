@@ -3,7 +3,7 @@
  * Plugin Name: Gravity Forms IBAN Extractor
  * Plugin URI: https://github.com/guilamu/gravity-forms-iban-extractor
  * Description: Adds an IBAN extractor field type to Gravity Forms with real-time validation and data extraction.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Guilamu
  * Author URI: https://github.com/guilamu
  * License: AGPL-3.0-or-later
@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants.
-define('GF_IBAN_EXTRACTOR_VERSION', '1.3.1');
+define('GF_IBAN_EXTRACTOR_VERSION', '1.3.2');
 define('GF_IBAN_EXTRACTOR_PLUGIN_FILE', __FILE__);
 define('GF_IBAN_EXTRACTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GF_IBAN_EXTRACTOR_PLUGIN_URL', plugin_dir_url(__FILE__));

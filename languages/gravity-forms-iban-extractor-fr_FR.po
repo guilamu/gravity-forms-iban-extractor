@@ -3,10 +3,10 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms IBAN Extractor 1.3.1\n"
+"Project-Id-Version: Gravity Forms IBAN Extractor 1.3.2\n"
 "Report-Msgid-Bugs-To: https://example.com/gravity-forms-iban-extractor\n"
 "POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
-"PO-Revision-Date: 2026-01-19 09:00+0100\n"
+"PO-Revision-Date: 2026-01-19 09:21+0100\n"
 "Last-Translator: Your Name <your@email.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "Language: fr_FR\n"
@@ -155,3 +155,79 @@ msgstr "Aperçu en temps réel"
 #: includes/admin-settings.php
 msgid "Enable live validation and data extraction as the user types."
 msgstr "Activer la validation et l'extraction des données en temps réel pendant la saisie."
+
+#: includes/admin-settings.php
+msgid "Document Extraction"
+msgstr "Extraction de document"
+
+#: includes/admin-settings.php
+msgid "Enable Document Scanning"
+msgstr "Activer la numérisation de document"
+
+#: includes/admin-settings.php
+msgid "POE API Key"
+msgstr "Clé API POE"
+
+#: includes/admin-settings.php
+msgid "Get your API key from poe.com"
+msgstr "Obtenez votre clé API sur poe.com"
+
+#: includes/admin-settings.php
+msgid "AI Model"
+msgstr "Modèle IA"
+
+#: includes/admin-settings.php
+msgid "-- Select Model --"
+msgstr "-- Sélectionner un modèle --"
+
+#: includes/admin-settings.php
+msgid "Load Models"
+msgstr "Charger les modèles"
+
+#: includes/admin-settings.php
+msgid "Allow users to upload a document (PDF, image) to automatically extract the IBAN using AI."
+msgstr "Permettre aux utilisateurs de télécharger un document (PDF, image) pour extraire automatiquement l'IBAN à l'aide de l'IA."
+
+#: includes/admin-settings.php
+msgid "Please enter an API key first."
+msgstr "Veuillez d'abord entrer une clé API."
+
+#: includes/admin-settings.php
+msgid "Loading..."
+msgstr "Chargement..."
+
+#: includes/admin-settings.php
+msgid "Loaded!"
+msgstr "Chargé !"
+
+#: includes/admin-settings.php
+msgid "Error loading models."
+msgstr "Erreur lors du chargement des modèles."
+
+#: includes/admin-settings.php
+msgid "Request failed."
+msgstr "La requête a échoué."
+
+#: includes/admin-settings.php
+msgid "Account Holder:"
+msgstr "Titulaire du compte :"
+
+#: includes/admin-settings.php
+msgid "Bank Name:"
+msgstr "Nom de la banque :"
+
+#: includes/admin-settings.php
+msgid "BIC/SWIFT:"
+msgstr "BIC/SWIFT :"
+
+#: includes/admin-settings.php
+msgid "Extracted IBAN:"
+msgstr "IBAN extrait :"
+
+#: includes/admin-settings.php
+msgid "Source Document:"
+msgstr "Document source :"
+
+#: includes/admin-settings.php
+msgid "View Document"
+msgstr "Voir le document"
