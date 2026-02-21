@@ -6,16 +6,29 @@ Adds an IBAN extractor field type to Gravity Forms with real-time validation and
 - **Validate IBANs** - Real-time validation of IBAN structure and checksums
 - **Extract Data** - Automatically extract Bank Name, BIC/SWIFT, and Bank Code
 - **Document Scanning** - Upload RIB/bank statements to auto-fill IBAN details using AI
+- **Multi-Provider AI** - Choose between POE and Google Gemini for document extraction
 
 ## Key Features
 - **Real-time Validation:** Instant feedback on IBAN validity as users type
-- **AI Extraction:** Uses POE API to read IBANs from uploaded documents
+- **AI Extraction:** Uses POE or Google Gemini API to read IBANs from uploaded documents
 - **Customizable Display:** Choose which extracted banking details to show
 - **Secure:** Validated inputs and secure API communication
 - **GitHub Updates:** Automatic updates from GitHub releases
 
+## Supported API Providers
+
+### POE
+- Dynamic model list fetched from API
+- Requires a POE API key from [poe.com](https://poe.com)
+- Models are filtered to only show image-capable ones
+
+### Google Gemini
+- Static curated model list (Gemini 2.0 Flash Lite, 2.0 Flash, 2.5 Flash Preview, 2.5 Pro Preview)
+- Requires an API key from [Google AI Studio](https://aistudio.google.com/apikey)
+- Uses the OpenAI-compatible endpoint
+
 ## Requirements
-- POE API Key (for document extraction features)
+- POE API Key or Google Gemini API Key (for document extraction features)
 - Gravity Forms 2.5 or higher
 - WordPress 5.8 or higher
 - PHP 7.4 or higher
@@ -25,11 +38,14 @@ Adds an IBAN extractor field type to Gravity Forms with real-time validation and
 2. Activate the plugin through the **Plugins** menu in WordPress
 3. Go to any Form -> Add Field -> **Advanced Fields** -> **IBAN Extractor**
 4. Configure display options in the field settings
-5. (Optional) Enter your POE API Key in the field settings to enable document scanning
+5. (Optional) Enter your POE or Gemini API Key in the field settings to enable document scanning
 
 ## FAQ
 ### How do I enable document scanning?
-In the form editor, click on the IBAN field, go to Field Settings, and check "Enable Document Scanning". You will need to provide a valid POE API Key.
+In the form editor, click on the IBAN field, go to Field Settings, and check "Enable Document Scanning". Select your preferred API provider (POE or Google Gemini) and enter the corresponding API key.
+
+### Can I use different providers per field?
+Yes. Each IBAN Extractor field has its own provider settings, so you can use POE on one field and Gemini on another within the same form.
 
 ### Which countries are supported?
 The plugin supports all SEPA countries and most international IBAN formats supported by the php-iban library.
@@ -50,7 +66,8 @@ Currently the prompt is optimized for standard bank documents. Customization may
 ├── includes
 │   ├── class-gf-field-iban-extractor.php  # Field class
 │   ├── class-iban-extractor.php      # IBAN parsing wrapper
-│   ├── class-poe-api-service.php     # AI document extraction
+│   ├── class-poe-api-service.php     # POE AI document extraction
+│   ├── class-gemini-api-service.php  # Google Gemini AI extraction
 │   ├── class-github-updater.php      # Auto-updater
 │   └── admin-settings.php            # Form editor settings
 ├── lib
@@ -63,6 +80,11 @@ Currently the prompt is optimized for standard bank documents. Customization may
 ```
 
 ## Changelog
+
+### 1.4.0
+- **New:** Google Gemini API support for document extraction
+- **New:** Provider selection dropdown (POE / Gemini) per field
+- **Improved:** Reusable prompt logic shared between API providers
 
 ### 1.3.2
 - **Improved:** Completed French translations for Document Extraction settings

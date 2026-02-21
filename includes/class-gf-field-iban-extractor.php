@@ -96,8 +96,11 @@ class GF_Field_IBAN_Extractor extends \GF_Field
             'show_bank_info' => false,
             'enable_preview' => true,
             'enable_document_extraction' => false,
+            'api_provider' => 'poe',
             'poe_api_key' => '',
             'poe_model' => '',
+            'gemini_api_key' => '',
+            'gemini_model' => '',
         );
     }
 
@@ -367,8 +370,11 @@ class GF_Field_IBAN_Extractor extends \GF_Field
         $this->show_bank_info = (bool) $this->show_bank_info;
         $this->enable_preview = (bool) $this->enable_preview;
         $this->enable_document_extraction = (bool) $this->enable_document_extraction;
+        $this->api_provider = sanitize_text_field($this->api_provider ?? 'poe');
         $this->poe_api_key = sanitize_text_field($this->poe_api_key ?? '');
         $this->poe_model = sanitize_text_field($this->poe_model ?? '');
+        $this->gemini_api_key = sanitize_text_field($this->gemini_api_key ?? '');
+        $this->gemini_model = sanitize_text_field($this->gemini_model ?? '');
     }
 
     /**

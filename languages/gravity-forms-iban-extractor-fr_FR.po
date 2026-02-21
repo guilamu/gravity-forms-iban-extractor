@@ -3,18 +3,18 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Gravity Forms IBAN Extractor 1.3.2\n"
+"Project-Id-Version: Gravity Forms IBAN Extractor 1.4.0\n"
 "Report-Msgid-Bugs-To: https://example.com/gravity-forms-iban-extractor\n"
-"POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
-"PO-Revision-Date: 2026-01-19 09:21+0100\n"
-"Last-Translator: Your Name <your@email.com>\n"
+"POT-Creation-Date: 2026-02-21T00:00:00+00:00\n"
+"PO-Revision-Date: 2026-02-21 21:53+0100\n"
+"Last-Translator: \n"
 "Language-Team: French <fr@li.org>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.4.4\n"
 
 #: gravity-forms-iban-extractor.php
 msgid "Gravity Forms IBAN Extractor requires %s to be installed and activated."
@@ -65,12 +65,128 @@ msgid "Did you mean:"
 msgstr "Vouliez-vous dire :"
 
 #: gravity-forms-iban-extractor.php
+msgid "Scan Document for IBAN"
+msgstr "Scanner un document pour extraire l'IBAN"
+
+#: gravity-forms-iban-extractor.php
+msgid "Scanning document..."
+msgstr "Analyse du document..."
+
+#: gravity-forms-iban-extractor.php
+msgid "IBAN extracted successfully"
+msgstr "IBAN extrait avec succès"
+
+#: gravity-forms-iban-extractor.php
+msgid "Could not extract IBAN from document"
+msgstr "Impossible d'extraire l'IBAN du document"
+
+#: gravity-forms-iban-extractor.php
+msgid "Please upload a PDF, PNG, JPG, or WEBP file"
+msgstr "Veuillez télécharger un fichier PDF, PNG, JPG ou WEBP"
+
+#: gravity-forms-iban-extractor.php
+msgid "File size must be less than 10MB"
+msgstr "La taille du fichier doit être inférieure à 10 Mo"
+
+#: gravity-forms-iban-extractor.php
+msgid "Drop document here"
+msgstr "Déposez le document ici"
+
+#: gravity-forms-iban-extractor.php
+msgid "or click to browse"
+msgstr "ou cliquez pour parcourir"
+
+#: gravity-forms-iban-extractor.php
+msgid "Extracted Information"
+msgstr "Informations extraites"
+
+#: gravity-forms-iban-extractor.php
+msgid "Account Holder"
+msgstr "Titulaire du compte"
+
+#: gravity-forms-iban-extractor.php
+msgid "Bank Name"
+msgstr "Nom de la banque"
+
+#: gravity-forms-iban-extractor.php
+msgid "BIC/SWIFT"
+msgstr "BIC/SWIFT"
+
+#: gravity-forms-iban-extractor.php
+msgid "Remove"
+msgstr "Supprimer"
+
+#: gravity-forms-iban-extractor.php
 msgid "Please enter an IBAN."
 msgstr "Veuillez entrer un IBAN."
 
 #: gravity-forms-iban-extractor.php
 msgid "Invalid IBAN format."
 msgstr "Format d'IBAN invalide."
+
+#: gravity-forms-iban-extractor.php
+msgid "Invalid field or form ID."
+msgstr "Identifiant de champ ou de formulaire invalide."
+
+#: gravity-forms-iban-extractor.php
+msgid "Form not found."
+msgstr "Formulaire non trouvé."
+
+#: gravity-forms-iban-extractor.php
+msgid "Field not found."
+msgstr "Champ non trouvé."
+
+#: gravity-forms-iban-extractor.php
+msgid "API key not configured."
+msgstr "Clé API non configurée."
+
+#: gravity-forms-iban-extractor.php
+msgid "AI model not configured."
+msgstr "Modèle IA non configuré."
+
+#: gravity-forms-iban-extractor.php
+msgid "No file uploaded."
+msgstr "Aucun fichier téléversé."
+
+#: gravity-forms-iban-extractor.php
+msgid "Invalid file type. Please upload PDF, PNG, JPG, or WEBP."
+msgstr "Type de fichier invalide. Veuillez télécharger un fichier PDF, PNG, JPG ou WEBP."
+
+#: gravity-forms-iban-extractor.php
+msgid "File too large. Maximum size is 10MB."
+msgstr "Fichier trop volumineux. La taille maximale est de 10 Mo."
+
+#: gravity-forms-iban-extractor.php
+msgid "Extraction failed."
+msgstr "L'extraction a échoué."
+
+#: gravity-forms-iban-extractor.php
+msgid "Security check failed."
+msgstr "Vérification de sécurité échouée."
+
+#: gravity-forms-iban-extractor.php
+msgid "Permission denied."
+msgstr "Permission refusée."
+
+#: gravity-forms-iban-extractor.php
+msgid "API key is required."
+msgstr "La clé API est requise."
+
+#: gravity-forms-iban-extractor.php
+msgid "PDF processing requires Imagick PHP extension."
+msgstr "Le traitement PDF nécessite l'extension PHP Imagick."
+
+#: gravity-forms-iban-extractor.php
+msgid "Failed to process PDF: "
+msgstr "Échec du traitement du PDF : "
+
+#: gravity-forms-iban-extractor.php
+msgid "Gravity Forms IBAN Extractor"
+msgstr "Gravity Forms IBAN Extractor"
+
+#: gravity-forms-iban-extractor.php
+msgid "🐛 Report a Bug"
+msgstr "🐛 Signaler un bug"
 
 #: includes/class-gf-field-iban-extractor.php
 msgid "IBAN Extractor"
@@ -112,6 +228,14 @@ msgstr "N° de compte :"
 msgid "BBAN:"
 msgstr "BBAN :"
 
+#: includes/class-gf-field-iban-extractor.php
+msgid "Scan document for IBAN"
+msgstr "Scanner un document pour extraire l'IBAN"
+
+#: includes/class-gf-field-iban-extractor.php
+msgid "Accepted file types: pdf, png, jpeg, webp."
+msgstr "Types de fichiers acceptés : pdf, png, jpeg, webp."
+
 #: includes/admin-settings.php
 msgid "Display Options"
 msgstr "Options d'affichage"
@@ -145,24 +269,20 @@ msgid "Enable Real-time Preview"
 msgstr "Activer l'aperçu en temps réel"
 
 #: includes/admin-settings.php
-msgid "Select which extracted IBAN data fields to display below the input."
-msgstr "Sélectionnez les champs de données IBAN extraits à afficher sous le champ de saisie."
-
-#: includes/admin-settings.php
-msgid "Real-time Preview"
-msgstr "Aperçu en temps réel"
-
-#: includes/admin-settings.php
-msgid "Enable live validation and data extraction as the user types."
-msgstr "Activer la validation et l'extraction des données en temps réel pendant la saisie."
-
-#: includes/admin-settings.php
 msgid "Document Extraction"
 msgstr "Extraction de document"
 
 #: includes/admin-settings.php
 msgid "Enable Document Scanning"
 msgstr "Activer la numérisation de document"
+
+#: includes/admin-settings.php
+msgid "API Provider"
+msgstr "Fournisseur d'API"
+
+#: includes/admin-settings.php
+msgid "Select which AI provider to use for document extraction."
+msgstr "Sélectionnez le fournisseur d'IA à utiliser pour l'extraction de documents."
 
 #: includes/admin-settings.php
 msgid "POE API Key"
@@ -173,8 +293,8 @@ msgid "Get your API key from poe.com"
 msgstr "Obtenez votre clé API sur poe.com"
 
 #: includes/admin-settings.php
-msgid "AI Model"
-msgstr "Modèle IA"
+msgid "POE AI Model"
+msgstr "Modèle IA POE"
 
 #: includes/admin-settings.php
 msgid "-- Select Model --"
@@ -183,6 +303,30 @@ msgstr "-- Sélectionner un modèle --"
 #: includes/admin-settings.php
 msgid "Load Models"
 msgstr "Charger les modèles"
+
+#: includes/admin-settings.php
+msgid "Gemini API Key"
+msgstr "Clé API Gemini"
+
+#: includes/admin-settings.php
+msgid "Get your API key from Google AI Studio"
+msgstr "Obtenez votre clé API sur Google AI Studio"
+
+#: includes/admin-settings.php
+msgid "Gemini AI Model"
+msgstr "Modèle IA Gemini"
+
+#: includes/admin-settings.php
+msgid "Select which extracted IBAN data fields to display below the input."
+msgstr "Sélectionnez les champs de données IBAN extraits à afficher sous le champ de saisie."
+
+#: includes/admin-settings.php
+msgid "Real-time Preview"
+msgstr "Aperçu en temps réel"
+
+#: includes/admin-settings.php
+msgid "Enable live validation and data extraction as the user types."
+msgstr "Activer la validation et l'extraction des données en temps réel pendant la saisie."
 
 #: includes/admin-settings.php
 msgid "Allow users to upload a document (PDF, image) to automatically extract the IBAN using AI."
@@ -231,3 +375,35 @@ msgstr "Document source :"
 #: includes/admin-settings.php
 msgid "View Document"
 msgstr "Voir le document"
+
+#: includes/class-poe-api-service.php includes/class-gemini-api-service.php
+msgid "API key is required"
+msgstr "La clé API est requise"
+
+#: includes/class-poe-api-service.php includes/class-gemini-api-service.php
+msgid "Model is required"
+msgstr "Le modèle est requis"
+
+#: includes/class-poe-api-service.php includes/class-gemini-api-service.php
+msgid "Image is required"
+msgstr "L'image est requise"
+
+#: includes/class-poe-api-service.php includes/class-gemini-api-service.php
+msgid "API returned status %d"
+msgstr "L'API a retourné le statut %d"
+
+#: includes/class-poe-api-service.php includes/class-gemini-api-service.php
+msgid "Failed to parse API response"
+msgstr "Impossible d'analyser la réponse de l'API"
+
+#: includes/class-poe-api-service.php includes/class-gemini-api-service.php
+msgid "Invalid API response"
+msgstr "Réponse API invalide"
+
+#: includes/class-poe-api-service.php
+msgid "Could not parse extraction response"
+msgstr "Impossible d'analyser la réponse d'extraction"
+
+#: includes/class-poe-api-service.php
+msgid "No IBAN found in the document"
+msgstr "Aucun IBAN trouvé dans le document"

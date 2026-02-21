@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Gravity Forms IBAN Extractor
  * Plugin URI: https://github.com/guilamu/gravity-forms-iban-extractor
- * Description: Adds an IBAN extractor field type to Gravity Forms with real-time validation and data extraction.
- * Version: 1.3.2
+ * Description: Adds an IBAN extractor field type to Gravity Forms with real-time validation and data extraction. Supports POE and Google Gemini APIs.
+ * Version: 1.4.0
  * Author: Guilamu
  * Author URI: https://github.com/guilamu
  * License: AGPL-3.0-or-later
@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants.
-define('GF_IBAN_EXTRACTOR_VERSION', '1.3.2');
+define('GF_IBAN_EXTRACTOR_VERSION', '1.4.0');
 define('GF_IBAN_EXTRACTOR_PLUGIN_FILE', __FILE__);
 define('GF_IBAN_EXTRACTOR_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('GF_IBAN_EXTRACTOR_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -89,6 +89,7 @@ function gf_iban_init()
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-iban-extractor.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-gf-field-iban-extractor.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-poe-api-service.php';
+    require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-gemini-api-service.php';
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/class-github-updater.php'; // Add GitHub Updater
     require_once GF_IBAN_EXTRACTOR_PLUGIN_DIR . 'includes/admin-settings.php';
 
@@ -224,11 +225,18 @@ function gf_iban_ajax_extract_from_document()
     }
 
     // Get API settings from field.
-    $api_key = $field->poe_api_key ?? '';
-    $model = $field->poe_model ?? '';
+    $provider = $field->api_provider ?? 'poe';
+
+    if ('gemini' === $provider) {
+        $api_key = $field->gemini_api_key ?? '';
+        $model   = $field->gemini_model ?? '';
+    } else {
+        $api_key = $field->poe_api_key ?? '';
+        $model   = $field->poe_model ?? '';
+    }
 
     if (empty($api_key)) {
-        wp_send_json_error(array('message' => __('POE API key not configured.', 'gravity-forms-iban-extractor')));
+        wp_send_json_error(array('message' => __('API key not configured.', 'gravity-forms-iban-extractor')));
     }
 
     if (empty($model)) {
@@ -276,8 +284,12 @@ function gf_iban_ajax_extract_from_document()
         $base64 = base64_encode($file_content);
     }
 
-    // Call POE API.
-    $result = POE_API_Service::extract_iban_from_document($api_key, $model, $base64);
+    // Call the appropriate API.
+    if ('gemini' === $provider) {
+        $result = Gemini_API_Service::extract_iban_from_document($api_key, $model, $base64);
+    } else {
+        $result = POE_API_Service::extract_iban_from_document($api_key, $model, $base64);
+    }
 
     if (is_wp_error($result)) {
         wp_send_json_error(array('message' => $result->get_error_message()));
@@ -325,7 +337,15 @@ function gf_iban_ajax_get_models()
         wp_send_json_error(array('message' => __('Permission denied.', 'gravity-forms-iban-extractor')));
     }
 
-    $api_key = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash($_POST['api_key'])) : '';
+    $api_key  = isset($_POST['api_key']) ? sanitize_text_field(wp_unslash($_POST['api_key'])) : '';
+    $provider = isset($_POST['provider']) ? sanitize_text_field(wp_unslash($_POST['provider'])) : 'poe';
+
+    if ('gemini' === $provider) {
+        // Gemini uses a static model list — no API key needed to list models.
+        $models = Gemini_API_Service::get_models();
+        wp_send_json_success(array('models' => $models));
+        return;
+    }
 
     if (empty($api_key)) {
         error_log('GF IBAN Extractor: Empty API key');

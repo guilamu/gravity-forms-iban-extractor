@@ -198,7 +198,7 @@ class POE_API_Service
      *
      * @return string
      */
-    private static function get_iban_extraction_prompt()
+    public static function get_iban_extraction_prompt()
     {
         return "You are an expert at extracting bank account information from documents.
 
@@ -235,7 +235,7 @@ JSON:";
      * @param string $content The API response content.
      * @return array Parsed extraction data.
      */
-    private static function parse_extraction_response($content)
+    public static function parse_extraction_response($content)
     {
         // Try to extract JSON from the response.
         $json = self::extract_json_from_text($content);

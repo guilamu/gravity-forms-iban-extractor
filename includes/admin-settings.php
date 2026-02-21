@@ -109,28 +109,73 @@ function gf_iban_document_extraction_settings($position, $form_id)
                 </label>
 
                 <div class="gf-iban-api-settings" style="display:none; margin-top: 15px;">
-                    <div class="gf-iban-api-key-wrap" style="margin-bottom: 10px;">
-                        <label for="field_poe_api_key" style="display:block; margin-bottom:5px;">
-                            <?php esc_html_e('POE API Key', 'gravity-forms-iban-extractor'); ?>
+                    <!-- API Provider -->
+                    <div class="gf-iban-provider-wrap" style="margin-bottom: 10px;">
+                        <label for="field_api_provider" style="display:block; margin-bottom:5px;">
+                            <?php esc_html_e('API Provider', 'gravity-forms-iban-extractor'); ?>
                         </label>
-                        <input type="password" id="field_poe_api_key" style="width:100%;"
-                            onchange="SetFieldProperty('poe_api_key', this.value);" />
+                        <select id="field_api_provider" style="width:100%;" onchange="SetFieldProperty('api_provider', this.value); gfIbanToggleProvider(this.value);">
+                            <option value="poe">POE</option>
+                            <option value="gemini">Google Gemini</option>
+                        </select>
                         <span class="gf_settings_description" style="font-size:12px;">
-                            <?php esc_html_e('Get your API key from poe.com', 'gravity-forms-iban-extractor'); ?>
+                            <?php esc_html_e('Select which AI provider to use for document extraction.', 'gravity-forms-iban-extractor'); ?>
                         </span>
                     </div>
 
-                    <div class="gf-iban-model-wrap">
-                        <label for="field_poe_model" style="display:block; margin-bottom:5px;">
-                            <?php esc_html_e('AI Model', 'gravity-forms-iban-extractor'); ?>
-                        </label>
-                        <select id="field_poe_model" style="width:100%;" onchange="SetFieldProperty('poe_model', this.value);">
-                            <option value=""><?php esc_html_e('-- Select Model --', 'gravity-forms-iban-extractor'); ?></option>
-                        </select>
-                        <button type="button" id="gf_iban_load_models" class="button" style="margin-top:5px;">
-                            <?php esc_html_e('Load Models', 'gravity-forms-iban-extractor'); ?>
-                        </button>
-                        <span class="gf-iban-model-status" style="margin-left:10px;"></span>
+                    <!-- POE Settings -->
+                    <div class="gf-iban-poe-settings">
+                        <div class="gf-iban-api-key-wrap" style="margin-bottom: 10px;">
+                            <label for="field_poe_api_key" style="display:block; margin-bottom:5px;">
+                                <?php esc_html_e('POE API Key', 'gravity-forms-iban-extractor'); ?>
+                            </label>
+                            <input type="password" id="field_poe_api_key" style="width:100%;"
+                                onchange="SetFieldProperty('poe_api_key', this.value);" />
+                            <span class="gf_settings_description" style="font-size:12px;">
+                                <?php esc_html_e('Get your API key from poe.com', 'gravity-forms-iban-extractor'); ?>
+                            </span>
+                        </div>
+
+                        <div class="gf-iban-model-wrap">
+                            <label for="field_poe_model" style="display:block; margin-bottom:5px;">
+                                <?php esc_html_e('POE AI Model', 'gravity-forms-iban-extractor'); ?>
+                            </label>
+                            <select id="field_poe_model" style="width:100%;" onchange="SetFieldProperty('poe_model', this.value);">
+                                <option value=""><?php esc_html_e('-- Select Model --', 'gravity-forms-iban-extractor'); ?></option>
+                            </select>
+                            <button type="button" id="gf_iban_load_models" class="button" style="margin-top:5px;">
+                                <?php esc_html_e('Load Models', 'gravity-forms-iban-extractor'); ?>
+                            </button>
+                            <span class="gf-iban-model-status" style="margin-left:10px;"></span>
+                        </div>
+                    </div>
+
+                    <!-- Gemini Settings -->
+                    <div class="gf-iban-gemini-settings" style="display:none;">
+                        <div class="gf-iban-api-key-wrap" style="margin-bottom: 10px;">
+                            <label for="field_gemini_api_key" style="display:block; margin-bottom:5px;">
+                                <?php esc_html_e('Gemini API Key', 'gravity-forms-iban-extractor'); ?>
+                            </label>
+                            <input type="password" id="field_gemini_api_key" style="width:100%;"
+                                onchange="SetFieldProperty('gemini_api_key', this.value);" />
+                            <span class="gf_settings_description" style="font-size:12px;">
+                                <?php esc_html_e('Get your API key from Google AI Studio', 'gravity-forms-iban-extractor'); ?>
+                                (<a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a>)
+                            </span>
+                        </div>
+
+                        <div class="gf-iban-model-wrap">
+                            <label for="field_gemini_model" style="display:block; margin-bottom:5px;">
+                                <?php esc_html_e('Gemini AI Model', 'gravity-forms-iban-extractor'); ?>
+                            </label>
+                            <select id="field_gemini_model" style="width:100%;" onchange="SetFieldProperty('gemini_model', this.value);">
+                                <option value=""><?php esc_html_e('-- Select Model --', 'gravity-forms-iban-extractor'); ?></option>
+                            </select>
+                            <button type="button" id="gf_iban_load_gemini_models" class="button" style="margin-top:5px;">
+                                <?php esc_html_e('Load Models', 'gravity-forms-iban-extractor'); ?>
+                            </button>
+                            <span class="gf-iban-gemini-model-status" style="margin-left:10px;"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -177,6 +222,17 @@ function gf_iban_editor_script()
 {
     ?>
     <script type="text/javascript">
+        // Toggle provider settings visibility.
+        function gfIbanToggleProvider(provider) {
+            if (provider === 'gemini') {
+                jQuery('.gf-iban-poe-settings').hide();
+                jQuery('.gf-iban-gemini-settings').show();
+            } else {
+                jQuery('.gf-iban-poe-settings').show();
+                jQuery('.gf-iban-gemini-settings').hide();
+            }
+        }
+
         // Add settings to the field types.
         jQuery(document).on('gform_load_field_settings', function (event, field, form) {
             if (field.type === 'iban_extractor') {
@@ -192,23 +248,36 @@ function gf_iban_editor_script()
                 // Document extraction settings.
                 jQuery('#field_enable_document_extraction').prop('checked', field.enable_document_extraction == true);
                 jQuery('.gf-iban-api-settings').toggle(field.enable_document_extraction == true);
+
+                // Provider settings.
+                var provider = field.api_provider || 'poe';
+                jQuery('#field_api_provider').val(provider);
+                gfIbanToggleProvider(provider);
+
+                // POE settings.
                 jQuery('#field_poe_api_key').val(field.poe_api_key || '');
                 jQuery('#field_poe_model').val(field.poe_model || '');
 
-                // If we have an API key and saved model, try to load models to populate dropdown.
+                // Gemini settings.
+                jQuery('#field_gemini_api_key').val(field.gemini_api_key || '');
+                jQuery('#field_gemini_model').val(field.gemini_model || '');
+
+                // If we have a POE API key and saved model, try to load models to populate dropdown.
                 if (field.poe_api_key && field.poe_model) {
                     gfIbanLoadModels(field.poe_api_key, field.poe_model);
+                }
+
+                // If Gemini, load Gemini models.
+                if (provider === 'gemini') {
+                    gfIbanLoadGeminiModels(field.gemini_model);
                 }
             }
         });
 
-        // Load models button click handler - use direct binding, not delegation.
-        // (Gravity Forms blocks event propagation on buttons)
+        // POE Load models button click handler.
         jQuery('#gf_iban_load_models').off('click').on('click', function (e) {
             e.preventDefault();
-            console.log('GF IBAN: Load Models button clicked');
             var apiKey = jQuery('#field_poe_api_key').val();
-            console.log('GF IBAN: API Key value:', apiKey ? apiKey.substr(0, 10) + '...' : 'empty');
             if (!apiKey) {
                 alert('<?php echo esc_js(__('Please enter an API key first.', 'gravity-forms-iban-extractor')); ?>');
                 return;
@@ -216,9 +285,14 @@ function gf_iban_editor_script()
             gfIbanLoadModels(apiKey);
         });
 
-        // Function to load models via AJAX.
+        // Gemini Load models button click handler.
+        jQuery('#gf_iban_load_gemini_models').off('click').on('click', function (e) {
+            e.preventDefault();
+            gfIbanLoadGeminiModels();
+        });
+
+        // Function to load POE models via AJAX.
         function gfIbanLoadModels(apiKey, selectedModel) {
-            console.log('GF IBAN: gfIbanLoadModels called');
             var $status = jQuery('.gf-iban-model-status');
             var $select = jQuery('#field_poe_model');
 
@@ -230,7 +304,45 @@ function gf_iban_editor_script()
                 data: {
                     action: 'gf_iban_get_models',
                     nonce: '<?php echo wp_create_nonce('gf_iban_admin'); ?>',
-                    api_key: apiKey
+                    api_key: apiKey,
+                    provider: 'poe'
+                },
+                success: function (response) {
+                    if (response.success && response.data.models) {
+                        $select.empty();
+                        $select.append('<option value=""><?php echo esc_js(__('-- Select Model --', 'gravity-forms-iban-extractor')); ?></option>');
+
+                        response.data.models.forEach(function (model) {
+                            var selected = (selectedModel && selectedModel === model.id) ? 'selected' : '';
+                            $select.append('<option value="' + model.id + '" ' + selected + '>' + model.name + '</option>');
+                        });
+
+                        $status.text('<?php echo esc_js(__('Loaded!', 'gravity-forms-iban-extractor')); ?>');
+                        setTimeout(function () { $status.text(''); }, 2000);
+                    } else {
+                        $status.text(response.data.message || '<?php echo esc_js(__('Error loading models.', 'gravity-forms-iban-extractor')); ?>');
+                    }
+                },
+                error: function () {
+                    $status.text('<?php echo esc_js(__('Request failed.', 'gravity-forms-iban-extractor')); ?>');
+                }
+            });
+        }
+
+        // Function to load Gemini models via AJAX (static list).
+        function gfIbanLoadGeminiModels(selectedModel) {
+            var $status = jQuery('.gf-iban-gemini-model-status');
+            var $select = jQuery('#field_gemini_model');
+
+            $status.text('<?php echo esc_js(__('Loading...', 'gravity-forms-iban-extractor')); ?>');
+
+            jQuery.ajax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'gf_iban_get_models',
+                    nonce: '<?php echo wp_create_nonce('gf_iban_admin'); ?>',
+                    provider: 'gemini'
                 },
                 success: function (response) {
                     if (response.success && response.data.models) {
